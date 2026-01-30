@@ -1,0 +1,97 @@
+.qpe-table input,
+.qpe-table textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.qpe-table textarea {
+    min-height: 60px;
+}
+
+.qpe-save {
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.qpe-ok {
+    color: green;
+    margin-left: 6px;
+    font-weight: bold;
+}
+
+.qpe-stock {
+    max-width: 90px;
+    text-align: center;
+}
+
+.qpe-parent {
+    background: #f6f7f7;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.qpe-child td {
+    background: #fff;
+}
+
+.qpe-indent {
+    padding-left: 32px !important;
+    position: relative;
+}
+
+.qpe-badge {
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+}
+
+.qpe-loading-row td {
+    padding: 12px 10px;
+}
+
+.qpe-pages {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.qpe-skel {
+    height: 12px;
+    border-radius: 4px;
+    background: linear-gradient(
+        90deg,
+        #f0f0f1 25%,
+        #e6e7e8 37%,
+        #f0f0f1 63%
+    );
+    background-size: 400% 100%;
+    animation: qpe-shimmer 1.2s ease infinite;
+}
+
+.qpe-loading-row .spinner {
+    float: none;
+    visibility: visible;
+}
+
+.skel-title { width: 80%; }
+.skel-price { width: 60px; }
+.skel-desc  { width: 90%; height: 20px; }
+
+@keyframes qpe-shimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: 0 0; }
+}
+
+@keyframes qpe-shimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: 0 0; }
+}
+
+.badge-simple   { background:#e6f9f0; color:#047857; }
+.badge-variable { background:#e7f3ff; color:#007cba; }
+.badge-grouped  { background:#fff4e5; color:#b45309; }
+.badge-external { background:#fde8e8; color:#b91c1c; }
