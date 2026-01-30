@@ -1,12 +1,54 @@
 jQuery(function ($) {
 
     /* =====================================================
+     * Validate Price Function
+     * ===================================================== */
+
+    function qpeValidatePrice(price, sale) {
+        price = price !== '' ? parseFloat(price) : '';
+        sale = sale !== '' ? parseFloat(sale) : '';
+
+        if (price !== '' && price < 0) {
+            return 'Giá bán không được nhỏ hơn 0';
+        }
+
+        if (sale !== '' && sale < 0) {
+            return 'Giá khuyến mãi không được nhỏ hơn 0';
+        }
+
+        if (price !== '' && sale !== '' && sale > price) {
+            return 'Giá khuyến mãi không được lớn hơn giá bán';
+        }
+
+        return true;
+    }
+
+    /* =====================================================
      * SAVE PRODUCT (AJAX)
      * ===================================================== */
-    $(document).on('click', '.qpe-save', function () {
 
-        const row = $(this).closest('tr');
-        const btn = $(this);
+    function qpeSaveRow(row, callback = null) {
+
+        const validation = qpeValidatePrice(
+            row.find('.qpe-price').val(),
+            row.find('.qpe-sale').val()
+        );
+
+        // VALIDATE FAIL → BÁO FAIL RÕ RÀNG
+        if (validation !== true) {
+            alert(validation);
+            row.addClass('qpe-error');
+
+            if (typeof callback === 'function') {
+                callback({
+                    success: false,
+                    type: 'validate',
+                    message: validation
+                });
+            }
+
+            return;
+        }
 
         const data = {
             action: 'qpe_save_product',
@@ -24,24 +66,92 @@ jQuery(function ($) {
                 : '',
         };
 
-        btn.prop('disabled', true).text(QPE.i18n.saving);
-
         $.post(QPE.ajax_url, data, function (res) {
-            btn.prop('disabled', false).text('Lưu');
 
             if (!res.success) {
-                alert(QPE.i18n.error);
+                row.addClass('qpe-error');
+            } else {
+                row.removeClass('qpe-error').addClass('qpe-saved');
+            }
+
+            if (typeof callback === 'function') {
+                callback(res);
+            }
+        });
+    }
+
+    function showSavedIcon(row) {
+        row.find('.qpe-ok').remove();
+
+        const ok = $('<span class="qpe-ok">✔</span>');
+        row.find('td:last').append(ok);
+
+        setTimeout(() => {
+            ok.fadeOut(300, () => ok.remove());
+        }, 800);
+    }
+
+
+
+    $(document).on('click', '.qpe-save', function () {
+
+        const btn = $(this);
+        const parentRow = btn.closest('tr');
+        const parentId = parentRow.data('id');
+
+        // CHỐNG DOUBLE CLICK
+        if (btn.prop('disabled')) return;
+
+        btn.prop('disabled', true).text(QPE.i18n?.saving || 'Đang lưu...');
+
+        // LƯU PARENT
+        qpeSaveRow(parentRow, function (res) {
+
+            // PARENT FAIL → DỪNG TOÀN BỘ
+            if (!res || res.success === false) {
+                btn.prop('disabled', false).text('Lưu');
                 return;
             }
 
-            btn.after('<span class="qpe-ok">✔</span>');
-            setTimeout(() => {
-                row.find('.qpe-ok').fadeOut(300, function () {
-                    $(this).remove();
+            // TÌM VARIATIONS
+            const variations = $('.qpe-variation[data-parent="' + parentId + '"]');
+
+            // KHÔNG CÓ VARIATION → XONG
+            if (!variations.length) {
+                btn.prop('disabled', false).text('Lưu');
+                showSavedIcon(parentRow);
+                return;
+            }
+
+            let saved = 0;
+            let hasError = false;
+
+            // LƯU VARIATIONS
+            variations.each(function () {
+
+                const row = $(this);
+
+                qpeSaveRow(row, function (res) {
+
+                    // CÓ 1 THẰNG FAIL → DỪNG
+                    if (!res || res.success === false) {
+                        hasError = true;
+                        btn.prop('disabled', false).text('Lưu');
+                        return;
+                    }
+
+                    saved++;
+
+                    // LƯU XONG HẾT
+                    if (saved === variations.length && !hasError) {
+                        btn.prop('disabled', false).text('Lưu');
+                        showSavedIcon(parentRow);
+                    }
                 });
-            }, 800);
+            });
         });
     });
+
 
     /* =====================================================
      * PAGINATION (PARENT + CHILD)

@@ -1,6 +1,5 @@
 <div class="wrap">
     <h1><?php esc_html_e('Danh sách sản phẩm', domain: 'quick-product-editor'); ?></h1>
-
     <table class="widefat striped qpe-table">
         <thead>
             <tr>

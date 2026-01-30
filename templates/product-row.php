@@ -148,15 +148,6 @@
                            echo esc_textarea($v->get_description());
                            ?></textarea>
                 </td>
-
-                <td>
-                    <button class="button qpe-save button-primary">
-                        <?php esc_html_e('Lưu', 'quick-product-editor'); ?>
-                    </button>
-                    <a href="<?php echo esc_url(get_permalink($product->get_id())); ?>" target="_blank" class="button qpe-view">
-                        <?php esc_html_e('Xem nhanh', 'quick-product-editor'); ?>
-                    </a>
-                </td>
             </tr>
         <?php endforeach; endif; ?>
 

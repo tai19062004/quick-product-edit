@@ -31,11 +31,28 @@ add_action('wp_ajax_qpe_save_product', function () {
     }
 
     // TITLE
-
     if (!empty($_POST['title'])) {
         $product->set_name(
             sanitize_text_field($_POST['title'])
         );
+    }
+
+    // Validate and save price fields
+    $price = isset($_POST['price']) ? wc_format_decimal($_POST['price']) : '';
+    $sale  = isset($_POST['sale']) ? wc_format_decimal($_POST['sale']) : '';
+
+    // Không cho âm
+    if ($price !== '' && $price < 0) {
+        wp_send_json_error(__('Giá bán không hợp lệ', 'quick-product-editor'));
+    }
+
+    if ($sale !== '' && $sale < 0) {
+        wp_send_json_error(__('Giá khuyến mãi không hợp lệ', 'quick-product-editor'));
+    }
+
+    // Sale <= price
+    if ($price !== '' && $sale !== '' && $sale > $price) {
+        wp_send_json_error(__('Giá khuyến mãi không được lớn hơn giá bán', 'quick-product-editor'));
     }
 
     // SIMPLE
